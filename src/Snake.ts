@@ -7,6 +7,7 @@ export default class Snake {
   nodes: Array<SnakeNode>;
   size: number;
   scale: number;
+  private CAN_CHANGE_DIRECTIONS: boolean = true;
   constructor(scale: number, color = "white") {
     this.xSpeed = scale * 1;
     this.ySpeed = scale * 1;
@@ -20,68 +21,43 @@ export default class Snake {
   print() {
     console.log(this.nodes);
   }
-  setNewPosition(screen: DrawI) {
+  setNewPosition(columns: number, rows: number) {
     const snakeHead = this.nodes[this.nodes.length - 1];
     let prevX = snakeHead.x;
     let prevY = snakeHead.y;
+    const followTheHead = () => {
+      for (let i = this.nodes.length - 2; i >= 0; i--) {
+        let temp = this.nodes[i].x;
+        let temp2 = this.nodes[i].y;
+        this.nodes[i].x = prevX;
+        this.nodes[i].y = prevY;
+        prevX = temp;
+        prevY = temp2;
+      }
+    };
     switch (this.direction) {
       case "right":
         snakeHead.x += snakeHead.size;
-        if (snakeHead.x > screen.columns) {
-          snakeHead.x = 0;
-        }
-        for (let i = this.nodes.length - 2; i >= 0; i--) {
-          let temp = this.nodes[i].x;
-          let temp2 = this.nodes[i].y;
-          this.nodes[i].x = prevX;
-          this.nodes[i].y = prevY;
-          prevX = temp;
-          prevY = temp2;
-        }
+        if (snakeHead.x + this.size / 2 > columns) snakeHead.x = 0;
+
         break;
       case "down":
         snakeHead.y += snakeHead.size;
-        if (snakeHead.y > screen.rows) {
-          snakeHead.y = 0;
-        }
-        for (let i = this.nodes.length - 2; i >= 0; i--) {
-          let temp = this.nodes[i].y;
-          let temp2 = this.nodes[i].x;
-          this.nodes[i].y = prevY;
-          this.nodes[i].x = prevX;
-          prevY = temp;
-          prevX = temp2;
-        }
+        if (snakeHead.y + this.size / 2 > rows) snakeHead.y = 0;
         break;
       case "left":
         snakeHead.x -= snakeHead.size;
-        if (snakeHead.x < 0) {
-          snakeHead.x = screen.columns - snakeHead.size;
-        }
-        for (let i = this.nodes.length - 2; i >= 0; i--) {
-          let temp = this.nodes[i].x;
-          let temp2 = this.nodes[i].y;
-          this.nodes[i].x = prevX;
-          this.nodes[i].y = prevY;
-          prevX = temp;
-          prevY = temp2;
-        }
+        if (snakeHead.x + this.size / 2 < 0)
+          snakeHead.x = columns - snakeHead.size;
+
         break;
       case "up":
         snakeHead.y -= snakeHead.size;
-        if (snakeHead.y + snakeHead.size < 0) {
-          snakeHead.y = screen.rows - snakeHead.size;
-        }
-        for (let i = this.nodes.length - 2; i >= 0; i--) {
-          let temp = this.nodes[i].y;
-          let temp2 = this.nodes[i].x;
-          this.nodes[i].y = prevY;
-          this.nodes[i].x = prevX;
-          prevY = temp;
-          prevX = temp2;
-        }
+        if (snakeHead.y + this.size / 2 < 0)
+          snakeHead.y = rows - snakeHead.size;
         break;
     }
+    followTheHead();
   }
   delete() {
     this.nodes = [];
@@ -100,25 +76,23 @@ export default class Snake {
 
     return didCollide;
   }
-  checkCollisionFruit(fruits: FruitsI[]) {
-    let collided = false;
-    let snakeHead = this.nodes[this.nodes.length - 1];
-    let fruitIndex;
-    fruits.forEach((fruit, i) => {
-      if (
-        snakeHead.x >= fruit.x - snakeHead.size / 2 &&
-        snakeHead.x <= fruit.x + snakeHead.size / 2 &&
-        snakeHead.y >= fruit.y - snakeHead.size / 2 &&
-        snakeHead.y <= fruit.y + snakeHead.size / 2
-      ) {
-        collided = true;
-        fruitIndex = i;
+  changeDirections(key: string) {
+    if (this.CAN_CHANGE_DIRECTIONS) {
+      switch (key) {
+        case "w":
+          this.direction = "up";
+          break;
+        case "d":
+          this.direction = "right";
+          break;
+        case "a":
+          this.direction = "left";
+          break;
+        case "s":
+          this.direction = "down";
+          break;
       }
-    });
-    if (collided) {
-      return fruitIndex;
     }
-    return undefined;
   }
   insert() {
     const snakeHead = this.nodes[this.nodes.length - 1];

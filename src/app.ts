@@ -1,11 +1,10 @@
 import Snake from "./Snake";
 import Draw from "./Draw";
 import { Fruit } from "./Fruit";
-import { FruitsI } from "./types";
-const GAME_SPEED = 1000 / 100;
 
 const game_1_root: HTMLElement = document.querySelector(".root");
 class Game {
+  private GAME_SPEED = 110;
   canvas: HTMLCanvasElement;
   root: HTMLElement;
   screen: Draw;
@@ -30,6 +29,26 @@ class Game {
     this.snake = new Snake(this.screen.scale, "#cfdac8");
     this.fruits = [];
   }
+  checkCollisionFruit() {
+    let collided = false;
+    let snakeHead = this.snake.nodes[this.snake.nodes.length - 1];
+    let fruitIndex;
+    this.fruits.forEach((fruit, i) => {
+      if (
+        snakeHead.x >= fruit.x - snakeHead.size / 2 &&
+        snakeHead.x <= fruit.x + snakeHead.size / 2 &&
+        snakeHead.y >= fruit.y - snakeHead.size / 2 &&
+        snakeHead.y <= fruit.y + snakeHead.size / 2
+      ) {
+        collided = true;
+        fruitIndex = i;
+      }
+    });
+    if (collided) {
+      return fruitIndex;
+    }
+    return undefined;
+  }
   drawScore() {
     const scoreElement: HTMLElement = document.getElementById("score");
     if (scoreElement) {
@@ -40,23 +59,11 @@ class Game {
   start() {
     this.drawScore();
     //variables
+    let CAN_GET_DIRECTIONS = true;
 
     // add event listener
     window.addEventListener("keypress", (e) => {
-      switch (e.key) {
-        case "w":
-          this.snake.direction = "up";
-          break;
-        case "d":
-          this.snake.direction = "right";
-          break;
-        case "a":
-          this.snake.direction = "left";
-          break;
-        case "s":
-          this.snake.direction = "down";
-          break;
-      }
+      this.snake.changeDirections(e.key);
     });
     //draw the snake
     this.screen.drawSnake(this.snake);
@@ -70,8 +77,8 @@ class Game {
     }, 5000);
 
     setInterval(() => {
-      this.snake.setNewPosition(this.screen);
-      const fruitCollided = this.snake.checkCollisionFruit(this.fruits);
+      this.snake.setNewPosition(this.screen.columns, this.screen.rows);
+      const fruitCollided = this.checkCollisionFruit();
       if (fruitCollided || fruitCollided === 0) {
         //handle collision
         this.snake.insert();
@@ -85,7 +92,7 @@ class Game {
         this.reset();
       }
       this.screen.drawBoard(this.snake, this.fruits);
-    }, 125);
+    }, this.GAME_SPEED);
   }
   reset() {
     this.score = 0;
@@ -95,5 +102,5 @@ class Game {
   }
 }
 
-const game = new Game(game_1_root, 1.3);
+const game = new Game(game_1_root, 2);
 game.start();

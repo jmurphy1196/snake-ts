@@ -5,9 +5,9 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "parcel index.html",
-    "build": "parcel build src/index.html dist",
-    "start": "parcel dist/index.html"
+    "dev": "parcel src/index.html",
+    "build": "parcel build src/index.html --public-url ./",
+    "start": "parcel dist/index.html --public-url ./"
   },
   "keywords": [],
   "author": "",

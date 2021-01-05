@@ -37,8 +37,8 @@ export default class Draw {
 
   randomPoints() {
     //TODO fix this -> sometimes will spawn fruit outside map edge
-    const randomX = Math.floor(Math.random() * this.columns + 32);
-    const randomY = Math.floor(Math.random() * this.rows - 32);
+    const randomX = Math.floor(Math.random() * this.columns - 45);
+    const randomY = Math.floor(Math.random() * this.rows - 45);
     return [randomX, randomY];
   }
 }
