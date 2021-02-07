@@ -61,7 +61,7 @@ export default class Snake {
   }
   delete() {
     this.nodes = [];
-    this.nodes.push(new SnakeNode(0, 0, this.size * this.scale));
+    this.nodes.push(new SnakeNode(0, 0, this.size));
   }
   checkCollisionWithSelf() {
     const snakePositions = {};

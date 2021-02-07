@@ -26,7 +26,7 @@ class Game {
 
     //setup the screen
     this.screen = new Draw(scale, canvas);
-    this.snake = new Snake(this.screen.scale, "#cfdac8");
+    this.snake = new Snake(1 * this.scale, "#cfdac8");
     this.fruits = [];
   }
   checkCollisionFruit() {
